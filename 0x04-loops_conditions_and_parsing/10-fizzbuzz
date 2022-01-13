@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 # Displays numbers from 1 to 100
 
-i=1
-while (( i<=100 )); do
-	if (( i % 3 == 0 && i % 5 == 0 )); then
-		echo "FizzBuzz"
-	elif (( i % 3 == 0 )); then
-		echo "Fizz"
-	elif (( i % 5 == 0 )); then
-		echo "Buzz"
-	else
-		echo "$i"
-	fi
-	(( i++ ))
+for((n=1;n<=100;n++))
+do
+    if ((n % 15 == 0))
+    then
+        echo "FizzBuzz"
+    elif ((n % 3 == 0))
+    then
+        echo "Fizz"
+    elif ((n % 5 == 0))
+    then
+        echo "Buzz"
+    else
+        echo "$n"
+    fi
 done
