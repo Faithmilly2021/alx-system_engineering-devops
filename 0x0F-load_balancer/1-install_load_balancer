@@ -1,25 +1,18 @@
 #!/usr/bin/env bash
-# Install and configure HAproxy on my lb-01 server.
-sudo apt-get -y update
-sudo apt-get -y upgrade
-sudo apt-get -y install haproxy
+# Install the load balanecer
 
-# edit config file
-server_config=\
-"
-frontend itslively-frontend
-        bind *:80
-        mode http
-        default_backend itslively-backend
-backend itslively-backend
-        balance roundrobin
-        server 962-web-01 3.227.211.247:80 check
-        server 962-web-02 3.236.123.188:80 check
-"
- echo "$server_config" >> /etc/haproxy/haproxy.cfg
-
- # enable haproxy to be started by init script
-
- echo "ENABLED=1" >> /etc/default/haproxy
-
- sudo service haproxy restart
+apt-get -y update
+apt-get -y install haproxy
+echo "ENABLED=1" >> /etc/default/haproxy
+cp /etc/haproxy/haproxy.cfg .
+cat >> /etc/haproxy/haproxy.cfg << EOF
+frontend asmamaw-alx-frontend
+	bind *:80
+	mode http
+	default_backend back
+backend asmamaw-alx-backend
+    balance roundrobin
+    server 1271-web-01 35.227.42.183:80 check
+    server 1271-web-02 34.74.166.35:80 check
+EOF
+service haproxy restart
