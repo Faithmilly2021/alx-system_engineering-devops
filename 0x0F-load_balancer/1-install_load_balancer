@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Install and configure HAproxy on my lb-01 server.
+sudo apt-get -y update
+sudo apt-get -y upgrade
+sudo apt-get -y install haproxy
+
+# edit config file
+server_config=\
+"
+frontend itslively-frontend
+        bind *:80
+        mode http
+        default_backend itslively-backend
+backend itslively-backend
+        balance roundrobin
+        server 962-web-01 3.227.211.247:80 check
+        server 962-web-02 3.236.123.188:80 check
+"
+ echo "$server_config" >> /etc/haproxy/haproxy.cfg
+
+ # enable haproxy to be started by init script
+
+ echo "ENABLED=1" >> /etc/default/haproxy
+
+ sudo service haproxy restart
