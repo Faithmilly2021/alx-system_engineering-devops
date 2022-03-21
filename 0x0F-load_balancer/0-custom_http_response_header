@@ -1,26 +1,15 @@
 #!/usr/bin/env bash
-#Install and automatically configures the nginx web server
+# Configure Nginx server in a ubuntu server 16.04
+# make a redirection 301 
+# make a 404 not found page
+# configure a response header
 
-apt-get update
-apt-get -y --allow-downgrades install nginx
-
-mkdir -p /var/www/html && touch /var/www/html/index.html
-echo "Hello World!" > /var/www/html/index.html
-touch /var/www/html/404.html
-echo "Ceci n'est pas une page" > /var/www/html/404.html
-echo "server {
-	listen	80 default_server;
-	listen	[::]:80 default_server;
-	add_header X-Served-By $HOSTNAME;
-	root	/var/www/html;
-	index	index.html index.htm;
-	location /redirect_me {
-		return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-        }
-	error_page 404 /404.html;
-	location /404 {
-		internal;
-	}
-    }" > /etc/nginx/sites-available/default
-
-service nginx restart
+sudo apt update &&
+sudo apt -y install nginx
+sudo ufw allow 'Nginx HTTP'
+echo 'Hello World!' > /var/www/html/index.html
+echo "Ceci n'est pas une page" > /usr/share/nginx/html/custom_404.html
+sed -i "/listen 80 default_server/a add_header X-Served-By \"$HOSTNAME\";" /etc/nginx/sites-available/default
+sed -i '/listen 80 default_server/a rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
+sed -i '/listen 80 default_server/a error_page 404 /custom_404.html; location = /custom_404.html {root /usr/share/nginx/html;\n internal;}' /etc/nginx/sites-available/default
+service nginx start
