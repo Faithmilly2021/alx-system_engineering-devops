@@ -1,43 +1,19 @@
 #!/usr/bin/python3
-'''
-get the data and print
-'''
-
+"""This script gather data from an API -
+    Task: Return to-do list information for a given employee ID
+"""
 import requests
-from sys import argv
+import sys
 
+if __name__ == "__main__":
+    user_id = sys.argv[1]
+    url = "https://jsonplaceholder.typicode.com/"
+    name = requests.get(url + "users/{}".format(user_id)).json().get(
+            "name")
+    todos = requests.get(url + "todos", params={"userId": user_id}).json()
 
-if __name__ == '__main__':
-    
-    emp_id = argv[1]
-    total_todos = 0
-    done_todos = 0
-    done_todos_titles = []
-
-    res = requests.get(
-                   'https://jsonplaceholder.typicode.com/users/' +
-                   emp_id)
-    emp_name = res.json().get('name', 'user name not found')
-
-    res = requests.get(
-                   'https://jsonplaceholder.typicode.com/users/' +
-                   emp_id + '/todos')
-    emp_todos = res.json()
-
-    for todo in emp_todos:
-        total_todos += 1
-        if todo.get('completed') is True:
-            done_todos += 1
-            done_todos_titles.append(todo.get(
-                                          'title',
-                                          'no title found'
-                                          ))
-
-    print('Employee {} is done with tasks({}/{}):'.format(
-                                                   emp_name,
-                                                   done_todos,
-                                                   total_todos
-                                                   ))
-
-    for title in done_todos_titles:
-        print('\t ' + title)
+    done = [todo.get("title") for todo in todos
+            if todo.get("completed") is True]
+    print("Employee {} is done with tasks({}/{}):".format(
+           name, len(done), len(todos)))
+    [print("\t {}".format(each)) for each in done]
